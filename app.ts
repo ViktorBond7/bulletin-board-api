@@ -5,12 +5,16 @@ import cookieParser from "cookie-parser";
 
 import { generateOpenApiDocument } from "./src/openapi.ts";
 
+import authRouter from "./src/routes/auth.routes.ts";
+
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 const openApiDocument = generateOpenApiDocument();
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
+
+app.use("/api/auth", authRouter);
 
 // 404 Not Found handler - must be after all routes
 app.use((_req: Request, res: Response) => {

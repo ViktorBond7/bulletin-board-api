@@ -10,4 +10,36 @@ datasource db {
   provider = "postgresql"
 }
 
-// Models here
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+
+  refreshTokens RefreshToken[]
+  announcements Announcement[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  category    String
+  authorId    Int
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
