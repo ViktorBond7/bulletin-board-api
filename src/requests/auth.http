@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### Логін
-POST http://localhost:3000/api/auth/login
+POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Оновлення токенів
-POST http://localhost:3000/api/auth/refresh
+POST http://localhost:3000/auth/refresh
 Content-Type: application/json
 
 {
@@ -33,3 +33,9 @@ Content-Type: application/json
 {
   "refreshToken": "вставте refresh token з відповіді логіну"
 }
+
+### Отримання інформації про поточного користувача
+GET http://localhost:3000/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1MTczNDA0LCJleHAiOjE3ODUxNzQzMDR9.BtM5_X6oqklP-a_G3n0MUPXcbdJinuBfSWBIhdZGR60
+
+

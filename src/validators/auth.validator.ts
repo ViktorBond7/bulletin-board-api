@@ -24,7 +24,7 @@ export type LoginBody = z.infer<typeof LoginSchema>;
 
 registry.registerPath({
   method: "post",
-  path: "/api/auth/register",
+  path: "/auth/register",
   tags: ["Auth"],
   summary: "Register a new user",
   request: {
@@ -43,7 +43,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: "post",
-  path: "/api/auth/login",
+  path: "/auth/login",
   tags: ["Auth"],
   summary: "Login user",
   request: {
@@ -62,7 +62,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: "post",
-  path: "/api/auth/refresh",
+  path: "/auth/refresh",
   tags: ["Auth"],
   summary: "Refresh token pair",
   responses: {
@@ -73,10 +73,24 @@ registry.registerPath({
 
 registry.registerPath({
   method: "post",
-  path: "/api/auth/logout",
+  path: "/auth/logout",
   tags: ["Auth"],
   summary: "Logout user",
   responses: {
     204: { description: "Logged out successfully" },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/auth/me",
+  tags: ["Auth"],
+  summary: "Get current user",
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: { description: "Current user retrieved successfully" },
+    401: { description: "Unauthorized" },
+    403: { description: "Forbidden" },
+    404: { description: "User not found" },
   },
 });

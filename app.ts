@@ -14,7 +14,7 @@ app.use(cookieParser());
 const openApiDocument = generateOpenApiDocument();
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
-app.use("/api/auth", authRouter);
+app.use("/auth", authRouter);
 
 // 404 Not Found handler - must be after all routes
 app.use((_req: Request, res: Response) => {
