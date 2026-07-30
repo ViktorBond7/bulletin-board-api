@@ -1,5 +1,5 @@
 ### Реєстрація нового користувача
-POST http://localhost:3000/api/auth/register
+POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {

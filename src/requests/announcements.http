@@ -1,0 +1,16 @@
+### Get All Announcements
+GET http://localhost:3000/announcements/?page=1&sort=newest&search=new
+Content-Type: application/json
+
+
+#### Create Announcement
+POST http://localhost:3000/announcements    
+Content-Type: application/json
+
+{
+  "title": "other announcement",
+  "description": "This is the description of the new announcement.",
+  "price": 100,
+  "category": "job",
+  "authorId": 1
+}
