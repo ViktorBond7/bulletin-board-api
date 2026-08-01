@@ -8,9 +8,28 @@ POST http://localhost:3000/announcements
 Content-Type: application/json
 
 {
-  "title": "other announcement",
+  "title": "other2 announcement",
   "description": "This is the description of the new announcement.",
   "price": 100,
   "category": "job",
   "authorId": 1
 }
+
+### Get Announcement by ID
+GET http://localhost:3000/announcements/1
+
+#### Update Announcement
+PATCH http://localhost:3000/announcements/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1NTY5NTQxLCJleHAiOjE3ODU1NzA0NDF9.hKsSBNp4AxNyXdVi1FG82KTUmFt7-enP5z1zCw_gyZs
+
+{
+  "title": "Updated announcement title125",
+  "description": "Updated description of the announcement.",
+  "price": 150,
+  "category": "service"
+}
+
+#### Delete Announcement
+DELETE http://localhost:3000/announcements/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1NTcxMjM5LCJleHAiOjE3ODU1NzIxMzl9.pcMDiFL7RCxugDcLPYFHU60eu-xQs1HrPPXSFG9-m-A

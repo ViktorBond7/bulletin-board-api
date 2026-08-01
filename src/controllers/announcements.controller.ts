@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 import prisma from "../../prisma/client.ts";
 import { Prisma } from "../../generated/prisma/browser.ts";
+import {
+  AnnouncementBody,
+  AnnouncementParams,
+  GetAnnouncementsQuery,
+} from "../validators/announcements.validator.ts";
 
 const limit = 10; // Number of announcements per page
 
@@ -49,7 +54,31 @@ export const getAllAnnouncements = async (req: Request, res: Response) => {
   });
 };
 
-export const createAnnouncement = async (req: Request, res: Response) => {
+export const getAnnouncementById = async (
+  req: Request<AnnouncementParams>,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const announcement = await prisma.announcement.findUnique({
+    where: { id: Number(id) },
+    include: {
+      author: {
+        select: { id: true, name: true, email: true, username: true },
+      },
+    },
+  });
+
+  if (!announcement) {
+    return res.status(404).json({ message: "Announcement not found" });
+  }
+
+  res.status(200).json(announcement);
+};
+
+export const createAnnouncement = async (
+  req: Request<{}, {}, AnnouncementBody>,
+  res: Response,
+) => {
   const { title, description, price, category, authorId } = req.body;
   const announcement = await prisma.announcement.create({
     data: {
@@ -62,4 +91,65 @@ export const createAnnouncement = async (req: Request, res: Response) => {
   });
 
   res.status(201).json(announcement);
+};
+
+export const updateAnnouncement = async (
+  req: Request<AnnouncementParams, {}, AnnouncementBody>,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const { title, description, price, category } = req.body;
+
+  const existingAnnouncement = await prisma.announcement.findUnique({
+    where: { id },
+  });
+  if (!existingAnnouncement) {
+    return res.status(404).json({ message: `Announcement not found` });
+  }
+  if (existingAnnouncement.authorId !== Number(req.user?.sub)) {
+    return res.status(403).json({
+      message: "Access denied",
+    });
+  }
+
+  const announcement = await prisma.announcement.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      price,
+      category,
+    },
+    include: {
+      author: {
+        select: { id: true, name: true, email: true, username: true },
+      },
+    },
+  });
+
+  res.status(200).json(announcement);
+};
+
+export const deleteAnnouncement = async (
+  req: Request<AnnouncementParams>,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const existingAnnouncement = await prisma.announcement.findUnique({
+    where: { id },
+  });
+  if (!existingAnnouncement) {
+    return res.status(404).json({ message: "Announcement not found" });
+  }
+  if (existingAnnouncement.authorId !== Number(req.user?.sub)) {
+    return res.status(403).json({
+      message: "Access denied",
+    });
+  }
+
+  await prisma.announcement.delete({
+    where: { id },
+  });
+
+  res.status(204).send().end();
 };

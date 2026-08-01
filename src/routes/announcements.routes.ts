@@ -1,13 +1,23 @@
 import { Router } from "express";
 import {
   createAnnouncement,
+  deleteAnnouncement,
   getAllAnnouncements,
+  getAnnouncementById,
+  updateAnnouncement,
 } from "../controllers/announcements.controller.ts";
 import {
-  AnnouncementSchema,
+  AnnouncementParamsSchema,
+  CreateAnnouncementSchema,
   GetAnnouncementsQuerySchema,
+  UpdateAmouncementSchema,
 } from "../validators/announcements.validator.ts";
-import { validateBody, validateQuery } from "../middleware/validate.ts";
+import {
+  validateBody,
+  validateQuery,
+  validateParams,
+} from "../middleware/validate.ts";
+import authenticate from "../middleware/authenticate.ts";
 
 // import { RegisterSchema, LoginSchema } from "../validators/auth.validator.ts";
 // import { validateBody } from "../middleware/validate.ts";
@@ -21,6 +31,28 @@ router.get(
   getAllAnnouncements,
 );
 
-router.post("/", validateBody(AnnouncementSchema), createAnnouncement);
+router.get("/:id", getAnnouncementById); // Placeholder for getting a single announcement by ID
+
+router.post(
+  "/",
+  authenticate,
+  validateBody(CreateAnnouncementSchema),
+  createAnnouncement,
+);
+
+router.patch(
+  "/:id",
+  validateBody(UpdateAmouncementSchema),
+  validateParams(AnnouncementParamsSchema),
+  authenticate,
+  updateAnnouncement,
+);
+
+router.delete(
+  "/:id",
+  validateParams(AnnouncementParamsSchema),
+  authenticate,
+  deleteAnnouncement,
+);
 
 export default router;
