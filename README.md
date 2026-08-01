@@ -140,17 +140,6 @@ boilerplate/
 └── README.md
 ```
 
-## Бойлерплейт
-
-Мінімальний стартовий набір:
-
-- `package.json` з усіма залежностями
-- `tsconfig.json` з налаштуваннями TypeScript
-- `src/openapi.ts` з ініціалізованим registry та `bearerAuth`
-- `prisma/client.ts` з ініціалізованим Prisma Client (PostgreSQL через `@prisma/adapter-pg`)
-- `prisma.config.ts` з конфігурацією Prisma
-- `.env.example` з шаблоном змінних середовища
-
 ## Доступні скрипти
 
 | Команда                   | Опис                                 |

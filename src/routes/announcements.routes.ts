@@ -19,10 +19,6 @@ import {
 } from "../middleware/validate.ts";
 import authenticate from "../middleware/authenticate.ts";
 
-// import { RegisterSchema, LoginSchema } from "../validators/auth.validator.ts";
-// import { validateBody } from "../middleware/validate.ts";
-// import authenticate from "../middleware/authenticate.ts";
-
 const router = Router();
 
 router.get(
@@ -31,7 +27,7 @@ router.get(
   getAllAnnouncements,
 );
 
-router.get("/:id", getAnnouncementById); // Placeholder for getting a single announcement by ID
+router.get("/:id", getAnnouncementById);
 
 router.post(
   "/",

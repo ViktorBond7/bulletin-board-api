@@ -31,5 +31,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0I
 }
 
 #### Delete Announcement
-DELETE http://localhost:3000/announcements/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1NTcxMjM5LCJleHAiOjE3ODU1NzIxMzl9.pcMDiFL7RCxugDcLPYFHU60eu-xQs1HrPPXSFG9-m-A
+DELETE http://localhost:3000/announcements/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1NTczNjMxLCJleHAiOjE3ODU1NzQ1MzF9.HucvBuQqVxPQXgua7fklhaZhOl-U3z6_rBij6-jv9Rs

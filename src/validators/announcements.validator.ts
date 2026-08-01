@@ -84,11 +84,13 @@ registry.registerPath({
       },
     },
   },
+  security: [{ bearerAuth: [] }],
   tags: ["Announcements"],
   summary: "Create a new announcement",
   responses: {
     201: { description: "Announcement created successfully" },
     400: { description: "Invalid request body" },
+    401: { description: "Authentication required" },
   },
 });
 
@@ -105,11 +107,13 @@ registry.registerPath({
       },
     },
   },
+  security: [{ bearerAuth: [] }],
   tags: ["Announcements"],
   summary: "Update an existing announcement",
   responses: {
     200: { description: "Announcement updated successfully" },
     400: { description: "Invalid request body" },
+    401: { description: "Authentication required" },
     403: { description: "Access denied" },
     404: { description: "Announcement not found" },
   },
@@ -121,10 +125,12 @@ registry.registerPath({
   request: {
     params: AnnouncementParamsSchema,
   },
+  security: [{ bearerAuth: [] }],
   tags: ["Announcements"],
   summary: "Delete an announcement by ID",
   responses: {
-    200: { description: "Announcement deleted successfully" },
+    204: { description: "Announcement deleted successfully" },
+    401: { description: "Authentication required" },
     403: { description: "Access denied" },
     404: { description: "Announcement not found" },
   },

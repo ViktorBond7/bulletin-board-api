@@ -18,7 +18,7 @@ const authenticate = (
   const token = req.headers.authorization?.replace("Bearer ", "");
 
   if (!token) {
-    throw createHttpError(401, "Authentication required");
+    return next(createHttpError(401, "Authentication required"));
   }
 
   try {
@@ -26,7 +26,7 @@ const authenticate = (
     req.user = decoded as jwt.JwtPayload;
     next();
   } catch (error) {
-    throw createHttpError(401, "Invalid or expired token");
+    next(createHttpError(401, "Invalid or expired token"));
   }
 };
 
