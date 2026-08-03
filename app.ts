@@ -2,13 +2,24 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import helmet from "helmet";
 
 import { generateOpenApiDocument } from "./src/openapi.ts";
-
 import authRouter from "./src/routes/auth.routes.ts";
 import announcementsRouter from "./src/routes/announcements.routes.ts";
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
+
 const app = express();
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
+app.use(helmet());
 
 app.use(express.json());
 app.use(cookieParser());
