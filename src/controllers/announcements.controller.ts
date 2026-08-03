@@ -6,6 +6,7 @@ import {
   AnnouncementParams,
   GetAnnouncementsQuery,
 } from "../validators/announcements.validator.ts";
+import logger from "../logger.ts";
 
 const limit = 10; // Number of announcements per page
 
@@ -80,6 +81,7 @@ export const createAnnouncement = async (
   res: Response,
 ) => {
   const { title, description, price, category, authorId } = req.body;
+  logger.info(`Creating announcement for author ID: ${authorId}`);
   const announcement = await prisma.announcement.create({
     data: {
       title,
@@ -89,7 +91,7 @@ export const createAnnouncement = async (
       authorId,
     },
   });
-
+  logger.info(`Announcement created with ID: ${announcement.id}`);
   res.status(201).json(announcement);
 };
 

@@ -4,12 +4,14 @@ import type { Request, Response } from "express";
 import prisma from "../../prisma/client.ts";
 import { createTokens, setRefreshTokenCookie } from "../services/auth.ts";
 import type { RegisterBody, LoginBody } from "../validators/auth.validator.ts";
+import logger from "../logger.ts";
 
 export const register = async (
   req: Request<{}, {}, RegisterBody>,
   res: Response,
 ) => {
   const { username, email, password, name } = req.body;
+  logger.info(`Registering user: ${username}`);
 
   const existingUser = await prisma.user.findFirst({
     where: {
@@ -18,6 +20,7 @@ export const register = async (
   });
 
   if (existingUser) {
+    logger.warn(`Username or email already taken: ${username}`);
     throw createHttpError(409, "Username or email already taken");
   }
 
@@ -34,6 +37,7 @@ export const register = async (
 
   const tokens = await createTokens(user.id);
   setRefreshTokenCookie(res, tokens.refreshToken);
+  logger.info(`User registered successfully: ${username}`);
 
   res.status(201).json({
     user: {
@@ -49,18 +53,21 @@ export const register = async (
 
 export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
   const { username, password } = req.body;
+  logger.info(`Logging in user: ${username}`);
 
   const user = await prisma.user.findUnique({
     where: { username },
   });
 
   if (!user) {
+    logger.warn(`Invalid credentials for username: ${username}`);
     throw createHttpError(401, "Invalid credentials");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
+    logger.warn(`Invalid credentials for username: ${username}`);
     throw createHttpError(401, "Invalid credentials");
   }
 
@@ -105,6 +112,7 @@ export const refresh = async (req: Request, res: Response) => {
 
   const tokens = await createTokens(storedToken.userId);
   setRefreshTokenCookie(res, tokens.refreshToken);
+  logger.info(`Refresh token renewed for user ID: ${storedToken.userId}`);
 
   res.status(200).json({
     accessToken: tokens.accessToken,
@@ -128,7 +136,6 @@ export const logout = async (req: Request, res: Response) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
   });
-
   res.status(204).end();
 };
 

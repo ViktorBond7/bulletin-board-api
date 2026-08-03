@@ -16,10 +16,7 @@ const router = Router();
 router.post("/register", validateBody(RegisterSchema), strictLimiter, register);
 router.post("/login", validateBody(LoginSchema), strictLimiter, login);
 router.post("/refresh", strictLimiter, refresh);
-router.post("/logout", authenticate, strictLimiter, logout);
+router.post("/logout", strictLimiter, logout);
 router.get("/me", authenticate, strictLimiter, getCurrentUser);
 
 export default router;
-
-// Rate limiter підключається лише до auth роутера, а не до всього застосунку.
-// Імпортуйте його в auth.routes.ts і застосуйте до всіх маршрутів цього роутера.
