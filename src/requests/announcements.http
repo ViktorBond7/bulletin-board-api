@@ -6,9 +6,10 @@ Content-Type: application/json
 #### Create Announcement
 POST http://localhost:3000/announcements    
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1ODI1NzgxLCJleHAiOjE3ODU4MjY2ODF9.DZkLyT92gm_m73ra0YEb7YWdrQJD78qkGd2Yr5XxlIE
 
 {
-  "title": "other2 announcement",
+  "title": "other88810101 announcement",
   "description": "This is the description of the new announcement.",
   "price": 100,
   "category": "job",
@@ -19,15 +20,16 @@ Content-Type: application/json
 GET http://localhost:3000/announcements/1
 
 #### Update Announcement
-PATCH http://localhost:3000/announcements/1
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1NTY5NTQxLCJleHAiOjE3ODU1NzA0NDF9.hKsSBNp4AxNyXdVi1FG82KTUmFt7-enP5z1zCw_gyZs
+PATCH http://localhost:3000/announcements/19
+Content-Type: multipart/form-data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzg1ODM0Mzg4LCJleHAiOjE3ODU4MzUyODh9.CaTygNUJw7czR9uBFMYTT-Re-Ek503T98Kt-CuEAydU
 
 {
   "title": "Updated announcement title125",
   "description": "Updated description of the announcement.",
   "price": 150,
   "category": "service"
+  
 }
 
 #### Delete Announcement

@@ -1,4 +1,8 @@
 import type { Request, Response } from "express";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
+import fs from "fs/promises";
+
 import prisma from "../../prisma/client.ts";
 import { Prisma } from "../../generated/prisma/browser.ts";
 import {
@@ -7,8 +11,17 @@ import {
   GetAnnouncementsQuery,
 } from "../validators/announcements.validator.ts";
 import logger from "../logger.ts";
+import { connect } from "http2";
 
 const limit = 10; // Number of announcements per page
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const upload = multer({ dest: "tmp/" });
 
 export const getAllAnnouncements = async (req: Request, res: Response) => {
   const { page = 1, sort, search } = res.locals.query;
@@ -76,22 +89,36 @@ export const getAnnouncementById = async (
   res.status(200).json(announcement);
 };
 
-export const createAnnouncement = async (
-  req: Request<{}, {}, AnnouncementBody>,
-  res: Response,
-) => {
-  const { title, description, price, category, authorId } = req.body;
-  logger.info(`Creating announcement for author ID: ${authorId}`);
+export const createAnnouncement = async (req: Request, res: Response) => {
+  const { title, description, price, category } = req.body;
+  let imageUrl: string | null = null;
+
+  // if passed file, upload to Cloudinary and get the URL
+  if (req.file) {
+    try {
+      // 1. Upload file to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "announcements", // Folder inside your Cloudinary
+      });
+      imageUrl = result.secure_url;
+    } finally {
+      // 2. Delete local file regardless of upload success
+      await fs.unlink(req.file.path).catch(console.error);
+    }
+  }
+
+  // 3. Save to database
   const announcement = await prisma.announcement.create({
     data: {
       title,
       description,
       price,
       category,
-      authorId,
+      imageUrl,
+      authorId: Number(req.user!.sub),
     },
   });
-  logger.info(`Announcement created with ID: ${announcement.id}`);
+
   res.status(201).json(announcement);
 };
 
@@ -99,8 +126,34 @@ export const updateAnnouncement = async (
   req: Request<AnnouncementParams, {}, AnnouncementBody>,
   res: Response,
 ) => {
+  const hasTextData = Object.keys(req.body).length > 0;
+  const hasFile = !!req.file;
+
+  if (!hasTextData && !hasFile) {
+    return res.status(400).json({
+      error: "Bad Request",
+      message: "At least one field or image must be provided for update",
+    });
+  }
+
   const { id } = req.params;
   const { title, description, price, category } = req.body;
+
+  let imageUrl: string | undefined = undefined;
+
+  // if passed file, upload to Cloudinary and get the URL
+  if (req.file) {
+    try {
+      // 1. Upload file to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "announcements", // Folder inside your Cloudinary
+      });
+      imageUrl = result.secure_url;
+    } finally {
+      // 2. Delete local file regardless of upload success
+      await fs.unlink(req.file.path).catch(console.error);
+    }
+  }
 
   const existingAnnouncement = await prisma.announcement.findUnique({
     where: { id },
@@ -121,6 +174,7 @@ export const updateAnnouncement = async (
       description,
       price,
       category,
+      imageUrl,
     },
     include: {
       author: {

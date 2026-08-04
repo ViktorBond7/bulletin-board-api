@@ -15,9 +15,13 @@ export const CreateAnnouncementSchema = registry.register(
   z.object({
     title: z.string().min(5).max(50),
     description: z.string().min(10),
-    price: z.number().positive(),
+    price: z.coerce.number().positive(),
     category: z.enum(["sale", "service", "job", "other"]),
-    authorId: z.number().int(),
+    authorId: z.coerce.number().int(),
+    image: z.any().optional().openapi({
+      type: "string",
+      format: "binary",
+    }),
   }),
 );
 
@@ -30,12 +34,7 @@ export const AnnouncementParamsSchema = registry.register(
 
 export const UpdateAmouncementSchema = registry.register(
   "UpdateAnnouncement",
-  CreateAnnouncementSchema.partial().refine(
-    (data) => Object.keys(data).length > 0,
-    {
-      error: "At least one field must be provided",
-    },
-  ),
+  CreateAnnouncementSchema.partial(),
 );
 
 export type GetAnnouncementsQuery = z.infer<typeof GetAnnouncementsQuerySchema>;
@@ -78,7 +77,7 @@ registry.registerPath({
   request: {
     body: {
       content: {
-        "application/json": {
+        "multipart/form-data": {
           schema: CreateAnnouncementSchema,
         },
       },
@@ -101,7 +100,7 @@ registry.registerPath({
     params: AnnouncementParamsSchema,
     body: {
       content: {
-        "application/json": {
+        "multipart/form-data": {
           schema: UpdateAmouncementSchema,
         },
       },

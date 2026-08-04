@@ -18,6 +18,7 @@ import {
   validateParams,
 } from "../middleware/validate.ts";
 import authenticate from "../middleware/authenticate.ts";
+import { upload } from "../middleware/upload.ts";
 
 const router = Router();
 
@@ -31,13 +32,15 @@ router.get("/:id", getAnnouncementById);
 
 router.post(
   "/",
-  authenticate,
+  upload.single("image"),
   validateBody(CreateAnnouncementSchema),
+  authenticate,
   createAnnouncement,
 );
 
 router.patch(
   "/:id",
+  upload.single("image") as any,
   validateBody(UpdateAmouncementSchema),
   validateParams(AnnouncementParamsSchema),
   authenticate,
