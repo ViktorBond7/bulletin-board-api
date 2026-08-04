@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { registry } from "../openapi.ts";
+import optionalField from "../helpers/optionalField.ts";
 
 export const GetAnnouncementsQuerySchema = registry.register(
   "GetAnnouncementsQuery",
@@ -34,7 +35,18 @@ export const AnnouncementParamsSchema = registry.register(
 
 export const UpdateAmouncementSchema = registry.register(
   "UpdateAnnouncement",
-  CreateAnnouncementSchema.partial(),
+  z.object({
+    title: optionalField(z.string().min(5).max(50)),
+    description: optionalField(z.string().min(10)),
+    price: optionalField(z.coerce.number().positive()),
+    category: optionalField(z.enum(["sale", "service", "job", "other"])),
+    image: optionalField(
+      z.any().openapi({
+        type: "string",
+        format: "binary",
+      }),
+    ),
+  }),
 );
 
 export type GetAnnouncementsQuery = z.infer<typeof GetAnnouncementsQuerySchema>;
