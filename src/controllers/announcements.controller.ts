@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { v2 as cloudinary } from "cloudinary";
-import multer from "multer";
 import fs from "fs/promises";
 
 import prisma from "../../prisma/client.ts";
@@ -82,24 +81,7 @@ export const getAnnouncementById = async (
 
 export const createAnnouncement = async (req: Request, res: Response) => {
   const { title, description, price, category } = req.body;
-  let imageUrl: string | null = null;
   logger.info("Creating announcement");
-
-  // if passed file, upload to Cloudinary and get the URL
-  if (req.file) {
-    logger.info("Uploading image to Cloudinary");
-    try {
-      // 1. Upload file to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "announcements", // Folder inside your Cloudinary
-      });
-      logger.info("Image uploaded to Cloudinary successfully");
-      imageUrl = result.secure_url;
-    } finally {
-      // 2. Delete local file regardless of upload success
-      await fs.unlink(req.file.path).catch(console.error);
-    }
-  }
 
   // 3. Save to database
   const announcement = await prisma.announcement.create({
@@ -108,7 +90,7 @@ export const createAnnouncement = async (req: Request, res: Response) => {
       description,
       price,
       category,
-      imageUrl,
+      imageUrl: res.locals.imageUrl,
       authorId: Number(req.user!.sub),
     },
   });
@@ -134,24 +116,6 @@ export const updateAnnouncement = async (
   const { id } = req.params;
   const { title, description, price, category } = req.body;
 
-  let imageUrl: string | undefined = undefined;
-
-  // if passed file, upload to Cloudinary and get the URL
-  if (req.file) {
-    logger.info("Uploading image to Cloudinary");
-    try {
-      // 1. Upload file to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "announcements", // Folder inside your Cloudinary
-      });
-      logger.info("Image uploaded to Cloudinary successfully");
-      imageUrl = result.secure_url;
-    } finally {
-      // 2. Delete local file regardless of upload success
-      await fs.unlink(req.file.path).catch(console.error);
-    }
-  }
-
   const existingAnnouncement = await prisma.announcement.findUnique({
     where: { id },
   });
@@ -175,7 +139,7 @@ export const updateAnnouncement = async (
       description,
       price,
       category,
-      imageUrl,
+      imageUrl: res.locals.imageUrl,
     },
     include: {
       author: {

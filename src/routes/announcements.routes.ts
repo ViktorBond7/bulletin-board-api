@@ -18,7 +18,7 @@ import {
   validateParams,
 } from "../middleware/validate.ts";
 import authenticate from "../middleware/authenticate.ts";
-import { upload } from "../middleware/upload.ts";
+import { upload, uploadToCloudinary } from "../middleware/upload.ts";
 
 const router = Router();
 
@@ -32,19 +32,21 @@ router.get("/:id", getAnnouncementById);
 
 router.post(
   "/",
-  upload.single("image"),
-  validateBody(CreateAnnouncementSchema),
   authenticate,
+  upload.single("image"),
+  uploadToCloudinary,
+  validateBody(CreateAnnouncementSchema),
   createAnnouncement,
 );
 
 router.patch(
   "/:id",
-  upload.single("image") as any,
-  validateBody(UpdateAmouncementSchema),
-  validateParams(AnnouncementParamsSchema),
   authenticate,
-  updateAnnouncement,
+  upload.single("image"),
+  validateParams(AnnouncementParamsSchema) as any,
+  uploadToCloudinary,
+  validateBody(UpdateAmouncementSchema),
+  updateAnnouncement as any,
 );
 
 router.delete(

@@ -29,7 +29,7 @@ export const validateParams =
         details: z.flattenError(result.error).fieldErrors,
       });
     }
-    req.params = result.data;
+    req.params = result.data as any;
     next();
   };
 
